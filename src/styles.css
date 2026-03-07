@@ -22,6 +22,10 @@ body {
   min-height: 100vh;
 }
 
+.hidden-input {
+  display: none;
+}
+
 .toolbar {
   position: sticky;
   top: 0;

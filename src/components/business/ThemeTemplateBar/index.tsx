@@ -7,6 +7,8 @@ interface ThemeTemplateBarProps {
   onTemplateChange: (template: TemplateType) => void;
   onThemeChange: (theme: ThemeType) => void;
   onPrint: () => void;
+  onExportJson: () => void;
+  onImportJson: () => void;
 }
 
 const ThemeTemplateBar = ({
@@ -16,6 +18,8 @@ const ThemeTemplateBar = ({
   onTemplateChange,
   onThemeChange,
   onPrint,
+  onExportJson,
+  onImportJson,
 }: ThemeTemplateBarProps) => (
   <div className="toolbar no-print">
     <label>
@@ -38,6 +42,12 @@ const ThemeTemplateBar = ({
     </label>
     <button type="button" onClick={onPrint}>
       导出 PDF（浏览器打印）
+    </button>
+    <button type="button" onClick={onExportJson}>
+      导出 JSON
+    </button>
+    <button type="button" onClick={onImportJson}>
+      导入 JSON
     </button>
   </div>
 );
