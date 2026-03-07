@@ -21,6 +21,16 @@ npm install
 npm run dev
 ```
 
+## 桌面端（Tauri）
+
+```bash
+# 开发模式（桌面窗口 + 前端热更新）
+npm run tauri:dev
+
+# 打包桌面应用
+npm run tauri:build
+```
+
 ## 构建检查
 
 ```bash
