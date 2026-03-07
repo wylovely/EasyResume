@@ -176,6 +176,43 @@ button {
   flex-wrap: wrap;
 }
 
+.version-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.version-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.version-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: #f8fafc;
+}
+
+.version-row strong {
+  font-size: 13px;
+}
+
+.version-row .muted {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
 .button-link {
   display: inline-flex;
   align-items: center;
@@ -583,6 +620,11 @@ textarea {
   border-color: #334155;
   background: #0f1a2f;
   color: #cbd5e1;
+}
+
+.app-ui-dark .version-row {
+  border-color: #334155;
+  background: #0f1a2f;
 }
 
 @media (max-width: 1024px) {

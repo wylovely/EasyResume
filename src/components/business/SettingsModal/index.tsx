@@ -1,5 +1,11 @@
 import { ThemeType, TemplateType } from '../../../types/resume';
 
+interface ResumeVersionItem {
+  id: string;
+  label: string;
+  createdAt: string;
+}
+
 interface SettingsModalProps {
   open: boolean;
   template: TemplateType;
@@ -17,6 +23,10 @@ interface SettingsModalProps {
   onExportJson: () => void;
   onImportJson: () => void;
   onImportPdf: () => void;
+  versions: ResumeVersionItem[];
+  onSaveVersion: () => void;
+  onApplyVersion: (id: string) => void;
+  onRestoreDefault: () => void;
 }
 
 const SettingsModal = ({
@@ -36,6 +46,10 @@ const SettingsModal = ({
   onExportJson,
   onImportJson,
   onImportPdf,
+  versions,
+  onSaveVersion,
+  onApplyVersion,
+  onRestoreDefault,
 }: SettingsModalProps) => {
   if (!open) return null;
 
@@ -119,6 +133,32 @@ const SettingsModal = ({
             <button type="button" onClick={onImportPdf}>
               从 PDF 导入
             </button>
+          </div>
+
+          <div className="version-section">
+            <div className="settings-actions">
+              <button type="button" onClick={onSaveVersion}>
+                保存数据版本
+              </button>
+              <button type="button" onClick={onRestoreDefault}>
+                恢复默认（无名模板）
+              </button>
+            </div>
+
+            <div className="version-list">
+              {versions.length === 0 && <p className="tip">暂无历史版本</p>}
+              {versions.map((item) => (
+                <div className="version-row" key={item.id}>
+                  <div>
+                    <strong>{item.label}</strong>
+                    <p className="muted">{item.createdAt}</p>
+                  </div>
+                  <button type="button" onClick={() => onApplyVersion(item.id)}>
+                    应用
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

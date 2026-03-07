@@ -1,4 +1,4 @@
-import { CSSProperties, ChangeEvent, useEffect, useRef, useState } from 'react';
+import { CSSProperties, ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
 import PdfPreviewModal from './components/business/PdfPreviewModal';
@@ -6,7 +6,7 @@ import TopToolbar from './components/business/TopToolbar';
 import SettingsModal from './components/business/SettingsModal';
 import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
 import { createDefaultResume } from './data/defaultResume';
-import { ThemeType, TemplateType, UiTheme } from './types/resume';
+import { ResumeData, ThemeType, TemplateType, UiTheme } from './types/resume';
 import {
   LocalExtendedConfig,
   createDefaultExtendedConfig,
@@ -69,6 +69,50 @@ const buildResumeFileBaseName = (
 };
 
 const PDF_SOFT_BREAK_CLASS = 'pdf-soft-break-before';
+const RESUME_VERSIONS_KEY = 'resumeVersions';
+const MAX_RESUME_VERSIONS = 20;
+
+interface ResumeVersionRecord {
+  id: string;
+  label: string;
+  createdAt: string;
+  resume: ResumeData;
+}
+
+const cloneResume = (value: ResumeData): ResumeData => {
+  if (typeof structuredClone === 'function') return structuredClone(value);
+  return JSON.parse(JSON.stringify(value)) as ResumeData;
+};
+
+const buildVersionLabel = (basics: { name: string; phone: string; role: string }): string => {
+  const name = basics.name.trim() || '无名';
+  const phone = basics.phone.trim() || '无电话';
+  const role = basics.role.trim() || '未设置岗位';
+  return `${name}-${phone}-${role}`;
+};
+
+const readResumeVersions = (source: Record<string, unknown>): ResumeVersionRecord[] => {
+  const raw = source[RESUME_VERSIONS_KEY];
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .map((item) => {
+      if (typeof item !== 'object' || item === null) return null;
+      const record = item as Record<string, unknown>;
+      if (typeof record.id !== 'string') return null;
+      if (typeof record.label !== 'string') return null;
+      if (typeof record.createdAt !== 'string') return null;
+      if (!isResumeData(record.resume)) return null;
+
+      return {
+        id: record.id,
+        label: record.label,
+        createdAt: record.createdAt,
+        resume: record.resume,
+      } satisfies ResumeVersionRecord;
+    })
+    .filter((item): item is ResumeVersionRecord => item !== null);
+};
 
 const applyPdfSoftBreaks = (target: HTMLElement): void => {
   const paperRect = target.getBoundingClientRect();
@@ -120,6 +164,7 @@ const App = () => {
   const [pdfImporting, setPdfImporting] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
   const importPdfInputRef = useRef<HTMLInputElement>(null);
+  const resumeVersions = useMemo(() => readResumeVersions(localConfig.pageConfigs), [localConfig.pageConfigs]);
 
   useEffect(() => {
     let disposed = false;
@@ -402,6 +447,44 @@ const App = () => {
     '--inner-gap-scale': innerGapScale.toString(),
   } as CSSProperties;
 
+  const saveResumeVersion = () => {
+    const createdAt = new Date().toLocaleString('zh-CN', { hour12: false });
+    const snapshot: ResumeVersionRecord = {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      label: buildVersionLabel(resume.basics),
+      createdAt,
+      resume: cloneResume(resume),
+    };
+
+    setLocalConfig((current) => {
+      const currentVersions = readResumeVersions(current.pageConfigs);
+      const nextVersions = [snapshot, ...currentVersions].slice(0, MAX_RESUME_VERSIONS);
+      return {
+        ...current,
+        pageConfigs: {
+          ...current.pageConfigs,
+          [RESUME_VERSIONS_KEY]: nextVersions,
+        },
+      };
+    });
+    window.alert('当前简历数据已保存为历史版本。');
+  };
+
+  const applyResumeVersion = (id: string) => {
+    const target = resumeVersions.find((item) => item.id === id);
+    if (!target) {
+      window.alert('未找到该历史版本。');
+      return;
+    }
+    setResume(cloneResume(target.resume));
+    window.alert(`已应用历史版本：${target.label}`);
+  };
+
+  const restoreDefaultResume = () => {
+    setResume(createDefaultResume());
+    window.alert('已恢复默认简历模板（无名）。');
+  };
+
   return (
     <div className={`app app-ui-${uiTheme}`} style={appStyle}>
       <TopToolbar
@@ -446,6 +529,10 @@ const App = () => {
           if (pdfImporting) return;
           importPdfInputRef.current?.click();
         }}
+        versions={resumeVersions.map(({ id, label, createdAt }) => ({ id, label, createdAt }))}
+        onSaveVersion={saveResumeVersion}
+        onApplyVersion={applyResumeVersion}
+        onRestoreDefault={restoreDefaultResume}
       />
 
       <input
