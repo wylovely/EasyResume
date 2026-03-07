@@ -31,6 +31,15 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
+## 本地数据存储
+
+- 当前已使用 Tauri 本地文件存储，不再依赖前端 `localStorage`
+- 数据文件：应用本地目录下 `resume_state.json`
+- 存储结构已预留扩展区：
+  - `pageSettings`（页面设置）
+  - `pluginSettings`（插件配置）
+  - `pageConfigs`（页面配置）
+
 ## 构建检查
 
 ```bash

@@ -5,42 +5,84 @@ import ThemeTemplateBar from './components/business/ThemeTemplateBar';
 import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
 import { createDefaultResume } from './data/defaultResume';
 import { ThemeType, TemplateType } from './types/resume';
-import { savePersistedState, loadPersistedState } from './utils/persistence';
+import {
+  LocalExtendedConfig,
+  createDefaultExtendedConfig,
+  loadPersistedState,
+  savePersistedState,
+} from './utils/persistence';
 import { isResumeData } from './utils/resumeValidation';
 
-const initState = () => {
-  const persisted = loadPersistedState();
-  if (persisted) {
-    return persisted;
-  }
-
-  return {
-    resume: createDefaultResume(),
-    template: 'classic' as TemplateType,
-    theme: 'ocean' as ThemeType,
-    fontScale: 1,
-    blockGapScale: 1,
-    innerGapScale: 1,
-  };
-};
+const createDefaultState = () => ({
+  resume: createDefaultResume(),
+  template: 'classic' as TemplateType,
+  theme: 'ocean' as ThemeType,
+  fontScale: 1,
+  blockGapScale: 1,
+  innerGapScale: 1,
+  localConfig: createDefaultExtendedConfig(),
+});
 
 const App = () => {
-  const initialStateRef = useRef<ReturnType<typeof initState> | null>(null);
-  if (!initialStateRef.current) {
-    initialStateRef.current = initState();
-  }
+  const initialStateRef = useRef(createDefaultState());
   const initialState = initialStateRef.current;
+
   const [resume, setResume] = useState(initialState.resume);
   const [template, setTemplate] = useState<TemplateType>(initialState.template);
   const [theme, setTheme] = useState<ThemeType>(initialState.theme);
   const [fontScale, setFontScale] = useState(initialState.fontScale);
   const [blockGapScale, setBlockGapScale] = useState(initialState.blockGapScale);
   const [innerGapScale, setInnerGapScale] = useState(initialState.innerGapScale);
+  const [localConfig, setLocalConfig] = useState<LocalExtendedConfig>(initialState.localConfig);
+  const [hydrated, setHydrated] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    savePersistedState({ resume, template, theme, fontScale, blockGapScale, innerGapScale });
-  }, [resume, template, theme, fontScale, blockGapScale, innerGapScale]);
+    let disposed = false;
+
+    const hydrate = async () => {
+      const persisted = await loadPersistedState();
+      if (disposed) return;
+
+      if (persisted) {
+        setResume(persisted.resume);
+        setTemplate(persisted.template);
+        setTheme(persisted.theme);
+        setFontScale(persisted.fontScale);
+        setBlockGapScale(persisted.blockGapScale);
+        setInnerGapScale(persisted.innerGapScale);
+        setLocalConfig({
+          pageSettings: persisted.pageSettings,
+          pluginSettings: persisted.pluginSettings,
+          pageConfigs: persisted.pageConfigs,
+        });
+      }
+
+      setHydrated(true);
+    };
+
+    void hydrate();
+
+    return () => {
+      disposed = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    void savePersistedState({
+      resume,
+      template,
+      theme,
+      fontScale,
+      blockGapScale,
+      innerGapScale,
+      pageSettings: localConfig.pageSettings,
+      pluginSettings: localConfig.pluginSettings,
+      pageConfigs: localConfig.pageConfigs,
+    });
+  }, [resume, template, theme, fontScale, blockGapScale, innerGapScale, localConfig, hydrated]);
 
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
