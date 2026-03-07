@@ -120,15 +120,47 @@ const App = () => {
 
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
-    const blob = new Blob([payload], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
     const stamp = new Date().toISOString().slice(0, 10);
+    const defaultFileName = `resume-${stamp}.json`;
 
-    anchor.href = url;
-    anchor.download = `resume-${stamp}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    if (!(typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window)) {
+      const blob = new Blob([payload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = defaultFileName;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    void (async () => {
+      try {
+        const { save } = await import('@tauri-apps/plugin-dialog');
+        const { invoke } = await import('@tauri-apps/api/core');
+        const { documentDir, join } = await import('@tauri-apps/api/path');
+        const lastPath = getStringSetting(localConfig.pageSettings, 'lastJsonSavePath');
+        const defaultPath = lastPath ?? (await join(await documentDir(), defaultFileName));
+        const selectedPath = await save({
+          title: '保存 JSON',
+          defaultPath,
+          filters: [{ name: 'JSON', extensions: ['json'] }],
+        });
+
+        if (!selectedPath) return;
+
+        await invoke('save_text_file', { path: selectedPath, content: payload });
+        setLocalConfig((current) => ({
+          ...current,
+          pageSettings: {
+            ...current.pageSettings,
+            lastJsonSavePath: selectedPath,
+          },
+        }));
+      } catch {
+        window.alert('导出 JSON 失败，请重试。');
+      }
+    })();
   };
 
   const onImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {

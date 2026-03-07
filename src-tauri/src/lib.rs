@@ -43,13 +43,23 @@ fn save_pdf_file(path: String, bytes: Vec<u8>) -> Result<(), String> {
   fs::write(path, bytes).map_err(|err| format!("failed to write pdf file: {err}"))
 }
 
+#[tauri::command]
+fn save_text_file(path: String, content: String) -> Result<(), String> {
+  let path = PathBuf::from(path);
+  if let Some(parent) = path.parent() {
+    fs::create_dir_all(parent).map_err(|err| format!("failed to create parent dirs: {err}"))?;
+  }
+  fs::write(path, content).map_err(|err| format!("failed to write text file: {err}"))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       load_local_state,
       save_local_state,
-      save_pdf_file
+      save_pdf_file,
+      save_text_file
     ])
     .plugin(tauri_plugin_dialog::init())
     .setup(|app| {
