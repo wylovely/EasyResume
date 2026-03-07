@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { ResumeData, ThemeType, TemplateType } from '../types/resume';
+import { ResumeData, ThemeType, TemplateType, UiTheme } from '../types/resume';
 import { isResumeData } from './resumeValidation';
 
 export interface LocalExtendedConfig {
@@ -12,6 +12,7 @@ export interface PersistedState extends LocalExtendedConfig {
   resume: ResumeData;
   template: TemplateType;
   theme: ThemeType;
+  uiTheme: UiTheme;
   fontScale: number;
   blockGapScale: number;
   innerGapScale: number;
@@ -19,12 +20,16 @@ export interface PersistedState extends LocalExtendedConfig {
 
 const TEMPLATE_SET: TemplateType[] = ['classic', 'modern', 'compact'];
 const THEME_SET: ThemeType[] = ['ocean', 'forest', 'sunset'];
+const UI_THEME_SET: UiTheme[] = ['light', 'dark'];
 
 const isTemplateType = (value: unknown): value is TemplateType =>
   typeof value === 'string' && TEMPLATE_SET.includes(value as TemplateType);
 
 const isThemeType = (value: unknown): value is ThemeType =>
   typeof value === 'string' && THEME_SET.includes(value as ThemeType);
+
+const isUiTheme = (value: unknown): value is UiTheme =>
+  typeof value === 'string' && UI_THEME_SET.includes(value as UiTheme);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -49,11 +54,13 @@ const normalizePersistedState = (record: Record<string, unknown>): PersistedStat
   if (!isResumeData(record.resume)) return null;
   if (!isTemplateType(record.template)) return null;
   if (!isThemeType(record.theme)) return null;
+  const uiTheme = isUiTheme(record.uiTheme) ? record.uiTheme : 'light';
 
   return {
     resume: record.resume,
     template: record.template,
     theme: record.theme,
+    uiTheme,
     // Backward compatibility for previous frontend-only storage schema.
     fontScale: normalizeScale(record.fontScale ?? record.uiScale),
     blockGapScale: normalizeScale(record.blockGapScale ?? record.spaceScale ?? record.uiScale),

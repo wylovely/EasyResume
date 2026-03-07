@@ -18,11 +18,23 @@ body {
   color: var(--text);
 }
 
+.dark-body {
+  background: radial-gradient(circle at top left, #0f172a, #0b1220 48%, #111827 100%);
+  color: #e5e7eb;
+}
+
 .app {
   min-height: 100vh;
   --font-scale: 1;
   --block-gap-scale: 1;
   --inner-gap-scale: 1;
+}
+
+.app-ui-dark {
+  --surface: #111827;
+  --line: #334155;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
 }
 
 .hidden-input {
@@ -76,6 +88,19 @@ button {
   cursor: pointer;
 }
 
+.app-ui-dark .toolbar {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.app-ui-dark select,
+.app-ui-dark button,
+.app-ui-dark input,
+.app-ui-dark textarea {
+  background: #0f172a;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(360px, 48%) 1fr;
@@ -83,6 +108,59 @@ button {
   padding: 16px;
   height: calc(100vh - 60px);
   overflow: hidden;
+}
+
+.settings-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.46);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+
+.settings-modal {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.25);
+}
+
+.settings-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.settings-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.settings-modal-body label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .left-pane {
@@ -102,6 +180,27 @@ button {
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
+}
+
+.app-ui-dark .paper {
+  background: #0b1220;
+  border-color: #334155;
+  box-shadow: 0 12px 42px rgba(2, 6, 23, 0.45);
+}
+
+.app-ui-dark .project-item {
+  background: #0f1a2f;
+  border-left-color: #1d4ed8;
+}
+
+.app-ui-dark .project-content-label {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.app-ui-dark .tag-list li {
+  background: #12384a;
+  color: #a7f3d0;
 }
 
 .panel-header {

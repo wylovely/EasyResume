@@ -53,3 +53,4 @@ export interface ResumeData {
 
 export type TemplateType = 'classic' | 'modern' | 'compact';
 export type ThemeType = 'ocean' | 'forest' | 'sunset';
+export type UiTheme = 'light' | 'dark';

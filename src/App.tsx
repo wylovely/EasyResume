@@ -1,10 +1,11 @@
 import { CSSProperties, ChangeEvent, useEffect, useRef, useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
-import ThemeTemplateBar from './components/business/ThemeTemplateBar';
+import TopToolbar from './components/business/TopToolbar';
+import SettingsModal from './components/business/SettingsModal';
 import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
 import { createDefaultResume } from './data/defaultResume';
-import { ThemeType, TemplateType } from './types/resume';
+import { ThemeType, TemplateType, UiTheme } from './types/resume';
 import {
   LocalExtendedConfig,
   createDefaultExtendedConfig,
@@ -17,6 +18,7 @@ const createDefaultState = () => ({
   resume: createDefaultResume(),
   template: 'classic' as TemplateType,
   theme: 'ocean' as ThemeType,
+  uiTheme: 'light' as UiTheme,
   fontScale: 1,
   blockGapScale: 1,
   innerGapScale: 1,
@@ -30,11 +32,13 @@ const App = () => {
   const [resume, setResume] = useState(initialState.resume);
   const [template, setTemplate] = useState<TemplateType>(initialState.template);
   const [theme, setTheme] = useState<ThemeType>(initialState.theme);
+  const [uiTheme, setUiTheme] = useState<UiTheme>(initialState.uiTheme);
   const [fontScale, setFontScale] = useState(initialState.fontScale);
   const [blockGapScale, setBlockGapScale] = useState(initialState.blockGapScale);
   const [innerGapScale, setInnerGapScale] = useState(initialState.innerGapScale);
   const [localConfig, setLocalConfig] = useState<LocalExtendedConfig>(initialState.localConfig);
   const [hydrated, setHydrated] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,6 +52,7 @@ const App = () => {
         setResume(persisted.resume);
         setTemplate(persisted.template);
         setTheme(persisted.theme);
+        setUiTheme(persisted.uiTheme);
         setFontScale(persisted.fontScale);
         setBlockGapScale(persisted.blockGapScale);
         setInnerGapScale(persisted.innerGapScale);
@@ -75,6 +80,7 @@ const App = () => {
       resume,
       template,
       theme,
+      uiTheme,
       fontScale,
       blockGapScale,
       innerGapScale,
@@ -82,7 +88,12 @@ const App = () => {
       pluginSettings: localConfig.pluginSettings,
       pageConfigs: localConfig.pageConfigs,
     });
-  }, [resume, template, theme, fontScale, blockGapScale, innerGapScale, localConfig, hydrated]);
+  }, [resume, template, theme, uiTheme, fontScale, blockGapScale, innerGapScale, localConfig, hydrated]);
+
+  useEffect(() => {
+    document.body.classList.toggle('dark-body', uiTheme === 'dark');
+    return () => document.body.classList.remove('dark-body');
+  }, [uiTheme]);
 
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
@@ -125,14 +136,17 @@ const App = () => {
   } as CSSProperties;
 
   return (
-    <div className="app" style={appStyle}>
-      <ThemeTemplateBar
+    <div className={`app app-ui-${uiTheme}`} style={appStyle}>
+      <TopToolbar uiTheme={uiTheme} onUiThemeChange={setUiTheme} onOpenSettings={() => setSettingsOpen(true)} />
+      <SettingsModal
+        open={settingsOpen}
         template={template}
         templateOptions={TEMPLATE_REGISTRY.map(({ id, label }) => ({ id, label }))}
         theme={theme}
         fontScale={fontScale}
         blockGapScale={blockGapScale}
         innerGapScale={innerGapScale}
+        onClose={() => setSettingsOpen(false)}
         onTemplateChange={setTemplate}
         onThemeChange={setTheme}
         onFontScaleChange={setFontScale}
