@@ -2,6 +2,7 @@ import { ThemeType, TemplateType } from '../../../types/resume';
 
 interface ThemeTemplateBarProps {
   template: TemplateType;
+  templateOptions: Array<{ id: TemplateType; label: string }>;
   theme: ThemeType;
   onTemplateChange: (template: TemplateType) => void;
   onThemeChange: (theme: ThemeType) => void;
@@ -10,6 +11,7 @@ interface ThemeTemplateBarProps {
 
 const ThemeTemplateBar = ({
   template,
+  templateOptions,
   theme,
   onTemplateChange,
   onThemeChange,
@@ -19,8 +21,11 @@ const ThemeTemplateBar = ({
     <label>
       模板
       <select value={template} onChange={(event) => onTemplateChange(event.target.value as TemplateType)}>
-        <option value="classic">Classic</option>
-        <option value="modern">Modern</option>
+        {templateOptions.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.label}
+          </option>
+        ))}
       </select>
     </label>
     <label>

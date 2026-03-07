@@ -2,6 +2,7 @@ import { useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
 import ThemeTemplateBar from './components/business/ThemeTemplateBar';
+import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
 import { createDefaultResume } from './data/defaultResume';
 import { ThemeType, TemplateType } from './types/resume';
 
@@ -14,6 +15,7 @@ const App = () => {
     <div className="app">
       <ThemeTemplateBar
         template={template}
+        templateOptions={TEMPLATE_REGISTRY.map(({ id, label }) => ({ id, label }))}
         theme={theme}
         onTemplateChange={setTemplate}
         onThemeChange={setTheme}

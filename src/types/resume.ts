@@ -50,5 +50,5 @@ export interface ResumeData {
   sections: ResumeSection[];
 }
 
-export type TemplateType = 'classic' | 'modern';
+export type TemplateType = 'classic' | 'modern' | 'compact';
 export type ThemeType = 'ocean' | 'forest' | 'sunset';

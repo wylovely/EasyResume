@@ -253,14 +253,46 @@ textarea {
   font-size: 13px;
 }
 
-.template-modern .paper {
+.modern-paper {
   border-radius: 0;
   border: none;
 }
 
-.template-modern .resume-header {
+.modern-header {
   border-bottom: 2px solid var(--accent);
   padding-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modern-meta {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.compact-paper {
+  min-height: 0;
+  padding: 20px;
+}
+
+.compact-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.template-compact .resume-section {
+  margin-top: 14px;
+}
+
+.template-compact .resume-section h2 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.template-compact .project-item p {
+  margin: 2px 0;
 }
 
 .theme-ocean {
