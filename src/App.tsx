@@ -212,7 +212,7 @@ const App = () => {
     setPdfPreviewLoading(true);
     setPdfPreviewError(null);
 
-    const tempClasses = [`template-${template}`, `theme-${theme}`];
+    const tempClasses = [`template-${template}`, `theme-${theme}`, 'pdf-exporting'];
     tempClasses.forEach((className) => target.classList.add(className));
 
     const prevFontScale = target.style.getPropertyValue('--font-scale');
@@ -233,14 +233,16 @@ const App = () => {
 
     try {
       const { default: html2pdf } = await import('html2pdf.js');
+      const pdfOptions = {
+        margin: [10, 10, 10, 10],
+        filename: 'resume-preview.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css'] },
+      };
       const worker = html2pdf()
-        .set({
-          margin: [8, 8, 8, 8],
-          filename: 'resume-preview.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        })
+        .set(pdfOptions as any)
         .from(target)
         .toPdf();
 

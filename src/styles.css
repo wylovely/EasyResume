@@ -338,7 +338,7 @@ textarea {
   max-height: 100%;
   overflow: auto;
   background: #edf2f7;
-  border: 1px solid #dbe3ef;
+  border: none;
   border-radius: 12px;
   color: #1f2937;
   --text: #1f2937;
@@ -360,6 +360,23 @@ textarea {
   border: none;
   padding: calc(20px * var(--inner-gap-scale));
   box-shadow: 0 12px 42px rgba(15, 23, 42, 0.12);
+}
+
+/* PDF export mode: lock A4-safe content width and avoid abrupt page splits. */
+.paper.pdf-exporting {
+  width: 190mm;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 10mm;
+  box-shadow: none;
+}
+
+.paper.pdf-exporting .resume-section,
+.paper.pdf-exporting .timeline-item,
+.paper.pdf-exporting .work-item,
+.paper.pdf-exporting .project-item {
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
 .resume-header h1 {
