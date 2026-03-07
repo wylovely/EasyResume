@@ -182,27 +182,6 @@ button {
   overflow: hidden;
 }
 
-.app-ui-dark .paper {
-  background: #0b1220;
-  border-color: #334155;
-  box-shadow: 0 12px 42px rgba(2, 6, 23, 0.45);
-}
-
-.app-ui-dark .project-item {
-  background: #0f1a2f;
-  border-left-color: #1d4ed8;
-}
-
-.app-ui-dark .project-content-label {
-  background: #1e293b;
-  color: #cbd5e1;
-}
-
-.app-ui-dark .tag-list li {
-  background: #12384a;
-  color: #a7f3d0;
-}
-
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -502,6 +481,40 @@ textarea {
 
 .theme-sunset {
   --accent: #c2410c;
+}
+
+/* Keep dark-mode overrides after base rules to avoid being overridden by later declarations. */
+.app-ui-dark .paper {
+  background: #0b1220;
+  border-color: #334155;
+  box-shadow: 0 12px 42px rgba(2, 6, 23, 0.45);
+}
+
+.app-ui-dark .group,
+.app-ui-dark .sub-group {
+  border-color: #334155;
+  background: #0f1a2f;
+}
+
+.app-ui-dark .section-collapsed-info {
+  border-color: #334155;
+  background: #0f1a2f;
+  color: #cbd5e1;
+}
+
+.app-ui-dark .project-item {
+  background: #0f1a2f;
+  border-left-color: #1d4ed8;
+}
+
+.app-ui-dark .project-content-label {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.app-ui-dark .tag-list li {
+  background: #12384a;
+  color: #a7f3d0;
 }
 
 @media (max-width: 1024px) {
