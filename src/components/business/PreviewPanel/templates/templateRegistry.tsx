@@ -77,7 +77,7 @@ const renderSections = (resume: ResumeData, options?: { compact?: boolean }) =>
   ));
 
 const ClassicTemplate = ({ resume }: TemplateProps) => (
-  <article className="paper">
+  <article className="paper" id="resume-paper">
     <header className="resume-header">
       <h1>{resume.basics.name || '你的姓名'}</h1>
       <p>{resume.basics.role || '目标职位'}</p>
@@ -92,7 +92,7 @@ const ClassicTemplate = ({ resume }: TemplateProps) => (
 );
 
 const ModernTemplate = ({ resume }: TemplateProps) => (
-  <article className="paper modern-paper">
+  <article className="paper modern-paper" id="resume-paper">
     <header className="resume-header modern-header">
       <div>
         <h1>{resume.basics.name || '你的姓名'}</h1>
@@ -109,7 +109,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => (
 );
 
 const CompactTemplate = ({ resume }: TemplateProps) => (
-  <article className="paper compact-paper">
+  <article className="paper compact-paper" id="resume-paper">
     <header className="resume-header compact-header">
       <h1>{resume.basics.name || '你的姓名'}</h1>
       <div className="meta">

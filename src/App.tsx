@@ -1,6 +1,7 @@
 import { CSSProperties, ChangeEvent, useEffect, useRef, useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
+import PdfPreviewModal from './components/business/PdfPreviewModal';
 import TopToolbar from './components/business/TopToolbar';
 import SettingsModal from './components/business/SettingsModal';
 import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
@@ -39,6 +40,10 @@ const App = () => {
   const [localConfig, setLocalConfig] = useState<LocalExtendedConfig>(initialState.localConfig);
   const [hydrated, setHydrated] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewError, setPdfPreviewError] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -95,6 +100,14 @@ const App = () => {
     return () => document.body.classList.remove('dark-body');
   }, [uiTheme]);
 
+  useEffect(() => {
+    return () => {
+      if (pdfPreviewUrl) {
+        URL.revokeObjectURL(pdfPreviewUrl);
+      }
+    };
+  }, [pdfPreviewUrl]);
+
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
     const blob = new Blob([payload], { type: 'application/json' });
@@ -129,6 +142,44 @@ const App = () => {
     }
   };
 
+  const openPdfPreview = async () => {
+    const target = document.getElementById('resume-paper');
+    if (!target) {
+      window.alert('未找到简历预览区域，无法生成 PDF。');
+      return;
+    }
+
+    setPdfPreviewOpen(true);
+    setPdfPreviewLoading(true);
+    setPdfPreviewError(null);
+
+    try {
+      const { default: html2pdf } = await import('html2pdf.js');
+      const worker = html2pdf()
+        .set({
+          margin: [8, 8, 8, 8],
+          filename: 'resume-preview.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        })
+        .from(target)
+        .toPdf();
+
+      const blob = (await worker.outputPdf('blob')) as Blob;
+      const nextUrl = URL.createObjectURL(blob);
+
+      setPdfPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return nextUrl;
+      });
+    } catch {
+      setPdfPreviewError('PDF 生成失败，请重试。');
+    } finally {
+      setPdfPreviewLoading(false);
+    }
+  };
+
   const appStyle = {
     '--font-scale': fontScale.toString(),
     '--block-gap-scale': blockGapScale.toString(),
@@ -141,7 +192,19 @@ const App = () => {
         uiTheme={uiTheme}
         onUiThemeChange={setUiTheme}
         onOpenSettings={() => setSettingsOpen(true)}
-        onOpenPreview={() => window.print()}
+        onOpenPreview={() => {
+          void openPdfPreview();
+        }}
+      />
+      <PdfPreviewModal
+        open={pdfPreviewOpen}
+        loading={pdfPreviewLoading}
+        pdfUrl={pdfPreviewUrl}
+        error={pdfPreviewError}
+        onClose={() => setPdfPreviewOpen(false)}
+        onRefresh={() => {
+          void openPdfPreview();
+        }}
       />
       <SettingsModal
         open={settingsOpen}
