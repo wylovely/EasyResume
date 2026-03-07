@@ -34,10 +34,24 @@ fn save_local_state(app: tauri::AppHandle, content: String) -> Result<(), String
   fs::write(path, content).map_err(|err| format!("failed to write local state file: {err}"))
 }
 
+#[tauri::command]
+fn save_pdf_file(path: String, bytes: Vec<u8>) -> Result<(), String> {
+  let path = PathBuf::from(path);
+  if let Some(parent) = path.parent() {
+    fs::create_dir_all(parent).map_err(|err| format!("failed to create parent dirs: {err}"))?;
+  }
+  fs::write(path, bytes).map_err(|err| format!("failed to write pdf file: {err}"))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![load_local_state, save_local_state])
+    .invoke_handler(tauri::generate_handler![
+      load_local_state,
+      save_local_state,
+      save_pdf_file
+    ])
+    .plugin(tauri_plugin_dialog::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(

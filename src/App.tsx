@@ -26,6 +26,11 @@ const createDefaultState = () => ({
   localConfig: createDefaultExtendedConfig(),
 });
 
+const getStringSetting = (source: Record<string, unknown>, key: string): string | null => {
+  const value = source[key];
+  return typeof value === 'string' && value.length > 0 ? value : null;
+};
+
 const App = () => {
   const initialStateRef = useRef(createDefaultState());
   const initialState = initialStateRef.current;
@@ -42,7 +47,9 @@ const App = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
+  const [pdfSaving, setPdfSaving] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
   const [pdfPreviewError, setPdfPreviewError] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -187,6 +194,7 @@ const App = () => {
 
       const blob = (await worker.outputPdf('blob')) as Blob;
       const nextUrl = URL.createObjectURL(blob);
+      setPdfPreviewBlob(blob);
 
       setPdfPreviewUrl((current) => {
         if (current) URL.revokeObjectURL(current);
@@ -215,6 +223,54 @@ const App = () => {
     }
   };
 
+  const savePdfToLocal = async () => {
+    if (!pdfPreviewBlob) {
+      window.alert('请先生成预览 PDF。');
+      return;
+    }
+
+    if (!(typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window)) {
+      const url = URL.createObjectURL(pdfPreviewBlob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `resume-${new Date().toISOString().slice(0, 10)}.pdf`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    setPdfSaving(true);
+    try {
+      const { save } = await import('@tauri-apps/plugin-dialog');
+      const { invoke } = await import('@tauri-apps/api/core');
+      const { documentDir, join } = await import('@tauri-apps/api/path');
+      const defaultFileName = `resume-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const lastPath = getStringSetting(localConfig.pageSettings, 'lastPdfSavePath');
+      const defaultPath = lastPath ?? (await join(await documentDir(), defaultFileName));
+      const selectedPath = await save({
+        title: '保存 PDF',
+        defaultPath,
+        filters: [{ name: 'PDF', extensions: ['pdf'] }],
+      });
+
+      if (!selectedPath) return;
+
+      const bytes = Array.from(new Uint8Array(await pdfPreviewBlob.arrayBuffer()));
+      await invoke('save_pdf_file', { path: selectedPath, bytes });
+      setLocalConfig((current) => ({
+        ...current,
+        pageSettings: {
+          ...current.pageSettings,
+          lastPdfSavePath: selectedPath,
+        },
+      }));
+    } catch {
+      window.alert('保存失败，请重试。');
+    } finally {
+      setPdfSaving(false);
+    }
+  };
+
   const appStyle = {
     '--font-scale': fontScale.toString(),
     '--block-gap-scale': blockGapScale.toString(),
@@ -234,11 +290,15 @@ const App = () => {
       <PdfPreviewModal
         open={pdfPreviewOpen}
         loading={pdfPreviewLoading}
+        saving={pdfSaving}
         pdfUrl={pdfPreviewUrl}
         error={pdfPreviewError}
         onClose={() => setPdfPreviewOpen(false)}
         onRefresh={() => {
           void openPdfPreview();
+        }}
+        onSave={() => {
+          void savePdfToLocal();
         }}
       />
       <SettingsModal

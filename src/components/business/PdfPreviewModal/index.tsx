@@ -3,11 +3,22 @@ interface PdfPreviewModalProps {
   loading: boolean;
   pdfUrl: string | null;
   error: string | null;
+  saving: boolean;
   onClose: () => void;
   onRefresh: () => void;
+  onSave: () => void;
 }
 
-const PdfPreviewModal = ({ open, loading, pdfUrl, error, onClose, onRefresh }: PdfPreviewModalProps) => {
+const PdfPreviewModal = ({
+  open,
+  loading,
+  pdfUrl,
+  error,
+  saving,
+  onClose,
+  onRefresh,
+  onSave,
+}: PdfPreviewModalProps) => {
   if (!open) return null;
 
   return (
@@ -19,11 +30,9 @@ const PdfPreviewModal = ({ open, loading, pdfUrl, error, onClose, onRefresh }: P
             <button type="button" onClick={onRefresh} disabled={loading}>
               {loading ? '生成中...' : '刷新'}
             </button>
-            {pdfUrl && !loading && (
-              <a className="button-link" href={pdfUrl} download="resume-preview.pdf">
-                下载
-              </a>
-            )}
+            <button type="button" onClick={onSave} disabled={loading || saving || !pdfUrl}>
+              {saving ? '保存中...' : '保存'}
+            </button>
             <button type="button" onClick={onClose}>
               关闭
             </button>
