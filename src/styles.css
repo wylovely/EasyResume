@@ -441,6 +441,12 @@ textarea {
     padding: 0;
   }
 
+  /* Ask browser to preserve background colors in print output. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   .no-print {
     display: none !important;
   }
@@ -460,5 +466,18 @@ textarea {
     min-height: 0;
     margin: 0;
     padding: 0;
+  }
+
+  .project-item {
+    background: #f8fbff !important;
+    border-left-color: #dbeafe !important;
+  }
+
+  .project-content-label {
+    background: #e2e8f0 !important;
+  }
+
+  .tag-list li {
+    background: #e6f6f4 !important;
   }
 }
