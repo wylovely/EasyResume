@@ -16,6 +16,7 @@ interface SettingsModalProps {
   onInnerGapScaleChange: (value: number) => void;
   onExportJson: () => void;
   onImportJson: () => void;
+  onImportPdf: () => void;
 }
 
 const SettingsModal = ({
@@ -34,6 +35,7 @@ const SettingsModal = ({
   onInnerGapScaleChange,
   onExportJson,
   onImportJson,
+  onImportPdf,
 }: SettingsModalProps) => {
   if (!open) return null;
 
@@ -113,6 +115,9 @@ const SettingsModal = ({
             </button>
             <button type="button" onClick={onImportJson}>
               导入 JSON
+            </button>
+            <button type="button" onClick={onImportPdf}>
+              从 PDF 导入
             </button>
           </div>
         </div>

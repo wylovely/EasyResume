@@ -14,6 +14,7 @@ import {
   savePersistedState,
 } from './utils/persistence';
 import { isResumeData } from './utils/resumeValidation';
+import { importResumeFromPdf } from './extraction/pdfImporter';
 
 const createDefaultState = () => ({
   resume: createDefaultResume(),
@@ -51,7 +52,9 @@ const App = () => {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
   const [pdfPreviewError, setPdfPreviewError] = useState<string | null>(null);
+  const [pdfImporting, setPdfImporting] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const importPdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -145,6 +148,23 @@ const App = () => {
     } catch {
       window.alert('导入失败：文件内容不是有效 JSON。');
     } finally {
+      event.target.value = '';
+    }
+  };
+
+  const onImportPdfFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setPdfImporting(true);
+    try {
+      const result = await importResumeFromPdf(file);
+      setResume(result.resume);
+      window.alert(`PDF 导入完成（引擎: ${result.metadata.engineId}）。请检查并修正识别结果。`);
+    } catch {
+      window.alert('PDF 导入失败：无法提取有效内容，请尝试更清晰的 PDF 或后续接入 OCR。');
+    } finally {
+      setPdfImporting(false);
       event.target.value = '';
     }
   };
@@ -317,6 +337,10 @@ const App = () => {
         onInnerGapScaleChange={setInnerGapScale}
         onExportJson={exportJson}
         onImportJson={() => importInputRef.current?.click()}
+        onImportPdf={() => {
+          if (pdfImporting) return;
+          importPdfInputRef.current?.click();
+        }}
       />
 
       <input
@@ -325,6 +349,13 @@ const App = () => {
         type="file"
         accept="application/json"
         onChange={onImportFileChange}
+      />
+      <input
+        ref={importPdfInputRef}
+        className="hidden-input"
+        type="file"
+        accept="application/pdf"
+        onChange={onImportPdfFileChange}
       />
 
       <main className="workspace">

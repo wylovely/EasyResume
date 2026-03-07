@@ -13,6 +13,7 @@
 - 支持浏览器打印导出 PDF
 - 支持简历 JSON 导入/导出
 - 支持本地存储持久化（刷新后自动恢复）
+- 支持从 PDF 导入（文本提取 -> 简历 JSON 映射 -> 自动渲染）
 
 ## 启动
 
@@ -39,6 +40,7 @@ npm run tauri:build
   - `pageSettings`（页面设置）
   - `pluginSettings`（插件配置）
   - `pageConfigs`（页面配置）
+- 提取引擎已抽象为可扩展结构，后续可接 OCR/大模型提取能力
 
 ## 构建检查
 
