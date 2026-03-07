@@ -32,6 +32,25 @@ const getStringSetting = (source: Record<string, unknown>, key: string): string 
   return typeof value === 'string' && value.length > 0 ? value : null;
 };
 
+const resolveDefaultSavePath = async (
+  lastSavedPath: string | null,
+  fallbackDir: string,
+  fileName: string
+): Promise<string> => {
+  const { dirname, join } = await import('@tauri-apps/api/path');
+
+  if (!lastSavedPath) {
+    return join(fallbackDir, fileName);
+  }
+
+  try {
+    const dir = await dirname(lastSavedPath);
+    return join(dir, fileName);
+  } catch {
+    return join(fallbackDir, fileName);
+  }
+};
+
 const sanitizeFilePart = (value: string): string =>
   value
     .trim()
@@ -185,9 +204,9 @@ const App = () => {
       try {
         const { save } = await import('@tauri-apps/plugin-dialog');
         const { invoke } = await import('@tauri-apps/api/core');
-        const { documentDir, join } = await import('@tauri-apps/api/path');
+        const { documentDir } = await import('@tauri-apps/api/path');
         const lastPath = getStringSetting(localConfig.pageSettings, 'lastJsonSavePath');
-        const defaultPath = lastPath ?? (await join(await documentDir(), defaultFileName));
+        const defaultPath = await resolveDefaultSavePath(lastPath, await documentDir(), defaultFileName);
         const selectedPath = await save({
           title: '保存 JSON',
           defaultPath,
@@ -348,11 +367,11 @@ const App = () => {
     try {
       const { save } = await import('@tauri-apps/plugin-dialog');
       const { invoke } = await import('@tauri-apps/api/core');
-      const { documentDir, join } = await import('@tauri-apps/api/path');
+      const { documentDir } = await import('@tauri-apps/api/path');
       const stamp = new Date().toISOString().slice(0, 10);
       const defaultFileName = `${buildResumeFileBaseName(resume.basics, stamp)}.pdf`;
       const lastPath = getStringSetting(localConfig.pageSettings, 'lastPdfSavePath');
-      const defaultPath = lastPath ?? (await join(await documentDir(), defaultFileName));
+      const defaultPath = await resolveDefaultSavePath(lastPath, await documentDir(), defaultFileName);
       const selectedPath = await save({
         title: '保存 PDF',
         defaultPath,
