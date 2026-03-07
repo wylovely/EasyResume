@@ -14,7 +14,6 @@ interface SettingsModalProps {
   onFontScaleChange: (value: number) => void;
   onBlockGapScaleChange: (value: number) => void;
   onInnerGapScaleChange: (value: number) => void;
-  onPrint: () => void;
   onExportJson: () => void;
   onImportJson: () => void;
 }
@@ -33,7 +32,6 @@ const SettingsModal = ({
   onFontScaleChange,
   onBlockGapScaleChange,
   onInnerGapScaleChange,
-  onPrint,
   onExportJson,
   onImportJson,
 }: SettingsModalProps) => {
@@ -110,9 +108,6 @@ const SettingsModal = ({
           </label>
 
           <div className="settings-actions">
-            <button type="button" onClick={onPrint}>
-              导出 PDF（浏览器打印）
-            </button>
             <button type="button" onClick={onExportJson}>
               导出 JSON
             </button>

@@ -137,7 +137,12 @@ const App = () => {
 
   return (
     <div className={`app app-ui-${uiTheme}`} style={appStyle}>
-      <TopToolbar uiTheme={uiTheme} onUiThemeChange={setUiTheme} onOpenSettings={() => setSettingsOpen(true)} />
+      <TopToolbar
+        uiTheme={uiTheme}
+        onUiThemeChange={setUiTheme}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenPreview={() => window.print()}
+      />
       <SettingsModal
         open={settingsOpen}
         template={template}
@@ -152,7 +157,6 @@ const App = () => {
         onFontScaleChange={setFontScale}
         onBlockGapScaleChange={setBlockGapScale}
         onInnerGapScaleChange={setInnerGapScale}
-        onPrint={() => window.print()}
         onExportJson={exportJson}
         onImportJson={() => importInputRef.current?.click()}
       />
