@@ -33,6 +33,7 @@ export const createDefaultResume = (): ResumeData => ({
               {
                 id: createId(),
                 name: '简历系统重构',
+                department: '平台研发部',
                 period: '2025.03 - 2025.08',
                 description: '搭建可配置简历模板系统，支持多主题与打印导出。',
                 responsibilities: '负责数据建模、编辑器开发与打印样式优化。',

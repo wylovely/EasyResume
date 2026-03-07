@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { CSSProperties, ChangeEvent, useEffect, useRef, useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
 import ThemeTemplateBar from './components/business/ThemeTemplateBar';
@@ -18,6 +18,9 @@ const initState = () => {
     resume: createDefaultResume(),
     template: 'classic' as TemplateType,
     theme: 'ocean' as ThemeType,
+    fontScale: 1,
+    blockGapScale: 1,
+    innerGapScale: 1,
   };
 };
 
@@ -30,11 +33,14 @@ const App = () => {
   const [resume, setResume] = useState(initialState.resume);
   const [template, setTemplate] = useState<TemplateType>(initialState.template);
   const [theme, setTheme] = useState<ThemeType>(initialState.theme);
+  const [fontScale, setFontScale] = useState(initialState.fontScale);
+  const [blockGapScale, setBlockGapScale] = useState(initialState.blockGapScale);
+  const [innerGapScale, setInnerGapScale] = useState(initialState.innerGapScale);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    savePersistedState({ resume, template, theme });
-  }, [resume, template, theme]);
+    savePersistedState({ resume, template, theme, fontScale, blockGapScale, innerGapScale });
+  }, [resume, template, theme, fontScale, blockGapScale, innerGapScale]);
 
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
@@ -70,14 +76,26 @@ const App = () => {
     }
   };
 
+  const appStyle = {
+    '--font-scale': fontScale.toString(),
+    '--block-gap-scale': blockGapScale.toString(),
+    '--inner-gap-scale': innerGapScale.toString(),
+  } as CSSProperties;
+
   return (
-    <div className="app">
+    <div className="app" style={appStyle}>
       <ThemeTemplateBar
         template={template}
         templateOptions={TEMPLATE_REGISTRY.map(({ id, label }) => ({ id, label }))}
         theme={theme}
+        fontScale={fontScale}
+        blockGapScale={blockGapScale}
+        innerGapScale={innerGapScale}
         onTemplateChange={setTemplate}
         onThemeChange={setTheme}
+        onFontScaleChange={setFontScale}
+        onBlockGapScaleChange={setBlockGapScale}
+        onInnerGapScaleChange={setInnerGapScale}
         onPrint={() => window.print()}
         onExportJson={exportJson}
         onImportJson={() => importInputRef.current?.click()}

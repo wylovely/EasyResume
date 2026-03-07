@@ -4,8 +4,14 @@ interface ThemeTemplateBarProps {
   template: TemplateType;
   templateOptions: Array<{ id: TemplateType; label: string }>;
   theme: ThemeType;
+  fontScale: number;
+  blockGapScale: number;
+  innerGapScale: number;
   onTemplateChange: (template: TemplateType) => void;
   onThemeChange: (theme: ThemeType) => void;
+  onFontScaleChange: (value: number) => void;
+  onBlockGapScaleChange: (value: number) => void;
+  onInnerGapScaleChange: (value: number) => void;
   onPrint: () => void;
   onExportJson: () => void;
   onImportJson: () => void;
@@ -15,8 +21,14 @@ const ThemeTemplateBar = ({
   template,
   templateOptions,
   theme,
+  fontScale,
+  blockGapScale,
+  innerGapScale,
   onTemplateChange,
   onThemeChange,
+  onFontScaleChange,
+  onBlockGapScaleChange,
+  onInnerGapScaleChange,
   onPrint,
   onExportJson,
   onImportJson,
@@ -39,6 +51,42 @@ const ThemeTemplateBar = ({
         <option value="forest">Forest</option>
         <option value="sunset">Sunset</option>
       </select>
+    </label>
+    <label className="slider-label">
+      字号
+      <input
+        type="range"
+        min={0.8}
+        max={1.2}
+        step={0.05}
+        value={fontScale}
+        onChange={(event) => onFontScaleChange(Number(event.target.value))}
+      />
+      <span>{Math.round(fontScale * 100)}%</span>
+    </label>
+    <label className="slider-label">
+      块间距
+      <input
+        type="range"
+        min={0.8}
+        max={1.2}
+        step={0.05}
+        value={blockGapScale}
+        onChange={(event) => onBlockGapScaleChange(Number(event.target.value))}
+      />
+      <span>{Math.round(blockGapScale * 100)}%</span>
+    </label>
+    <label className="slider-label">
+      块内间距
+      <input
+        type="range"
+        min={0.8}
+        max={1.2}
+        step={0.05}
+        value={innerGapScale}
+        onChange={(event) => onInnerGapScaleChange(Number(event.target.value))}
+      />
+      <span>{Math.round(innerGapScale * 100)}%</span>
     </label>
     <button type="button" onClick={onPrint}>
       导出 PDF（浏览器打印）

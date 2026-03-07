@@ -20,6 +20,9 @@ body {
 
 .app {
   min-height: 100vh;
+  --font-scale: 1;
+  --block-gap-scale: 1;
+  --inner-gap-scale: 1;
 }
 
 .hidden-input {
@@ -31,6 +34,7 @@ body {
   top: 0;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   padding: 12px 16px;
@@ -44,6 +48,16 @@ body {
   gap: 8px;
   align-items: center;
   font-size: 14px;
+}
+
+.slider-label input[type="range"] {
+  width: 120px;
+}
+
+.slider-label span {
+  min-width: 44px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 select,
@@ -67,10 +81,12 @@ button {
   grid-template-columns: minmax(360px, 48%) 1fr;
   gap: 16px;
   padding: 16px;
+  height: calc(100vh - 60px);
+  overflow: hidden;
 }
 
 .left-pane {
-  max-height: calc(100vh - 82px);
+  max-height: 100%;
   overflow: auto;
   padding-right: 8px;
 }
@@ -169,11 +185,12 @@ textarea {
 }
 
 .right-pane {
+  max-height: 100%;
   overflow: auto;
 }
 
 .preview-shell {
-  padding: 12px;
+  padding: calc(8px * var(--block-gap-scale));
 }
 
 .paper {
@@ -183,57 +200,114 @@ textarea {
   min-height: 1123px;
   border-radius: 10px;
   border: 1px solid var(--line);
-  padding: 28px;
+  padding: calc(20px * var(--inner-gap-scale));
   box-shadow: 0 12px 42px rgba(15, 23, 42, 0.12);
 }
 
 .resume-header h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: calc(34px * var(--font-scale));
 }
 
 .resume-header p {
-  margin: 8px 0;
-  font-size: 18px;
+  margin: calc(4px * var(--inner-gap-scale)) 0 calc(8px * var(--inner-gap-scale));
+  font-size: calc(16px * var(--font-scale));
 }
 
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: calc(12px * var(--inner-gap-scale));
   color: var(--muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--font-scale));
 }
 
 .resume-section {
-  margin-top: 22px;
+  margin-top: calc(16px * var(--block-gap-scale));
 }
 
 .resume-section h2 {
-  margin: 0 0 10px;
+  margin: 0 0 calc(8px * var(--inner-gap-scale));
   border-left: 4px solid var(--accent);
-  padding-left: 8px;
-  font-size: 18px;
+  padding-left: calc(8px * var(--inner-gap-scale));
+  font-size: calc(16px * var(--font-scale));
 }
 
 .timeline-item {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: calc(16px * var(--inner-gap-scale));
+  margin-bottom: calc(8px * var(--block-gap-scale));
 }
 
 .work-item {
+  display: block;
   border-bottom: 1px solid #e6edf7;
-  padding-bottom: 10px;
+  padding-bottom: calc(8px * var(--inner-gap-scale));
+}
+
+.work-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: calc(8px * var(--inner-gap-scale));
+  margin-bottom: calc(4px * var(--inner-gap-scale));
+}
+
+.work-period {
+  font-size: calc(13px * var(--font-scale));
+  color: var(--muted);
+  margin-left: calc(4px * var(--inner-gap-scale));
 }
 
 .project-item h4 {
-  margin: 6px 0;
+  margin: calc(8px * var(--inner-gap-scale)) 0 calc(4px * var(--inner-gap-scale));
+  font-size: calc(16px * var(--font-scale));
 }
 
 .project-item p {
-  margin: 4px 0;
+  margin: calc(4px * var(--inner-gap-scale)) 0;
+}
+
+.project-meta {
+  font-size: calc(12px * var(--font-scale));
+  line-height: calc(16px * var(--font-scale));
+}
+
+.project-item {
+  margin-top: calc(8px * var(--block-gap-scale));
+  padding: calc(8px * var(--inner-gap-scale));
+  border-left: 2px solid #dbeafe;
+  background: #f8fbff;
+}
+
+.project-content {
+  margin-top: calc(8px * var(--inner-gap-scale));
+}
+
+.project-content-label {
+  display: inline-block;
+  margin-bottom: calc(4px * var(--inner-gap-scale));
+  font-size: calc(12px * var(--font-scale));
+  line-height: calc(16px * var(--font-scale));
+  letter-spacing: 0.2px;
+  color: #475569;
+  background: #e2e8f0;
+  border-radius: 4px;
+  padding: calc(2px * var(--inner-gap-scale)) calc(8px * var(--inner-gap-scale));
+}
+
+.project-description p {
+  color: #334155;
+  font-size: calc(13px * var(--font-scale));
+  line-height: calc(18px * var(--font-scale));
+}
+
+.project-responsibilities p {
+  color: #0f172a;
+  font-size: calc(13px * var(--font-scale));
+  line-height: calc(18px * var(--font-scale));
+  font-weight: 500;
 }
 
 .muted {
@@ -243,7 +317,7 @@ textarea {
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8px * var(--inner-gap-scale));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -252,9 +326,9 @@ textarea {
 .tag-list li {
   background: #e6f6f4;
   color: #0e7490;
-  padding: 4px 10px;
+  padding: calc(4px * var(--inner-gap-scale)) calc(10px * var(--inner-gap-scale));
   border-radius: 999px;
-  font-size: 13px;
+  font-size: calc(13px * var(--font-scale));
 }
 
 .modern-paper {
@@ -264,11 +338,11 @@ textarea {
 
 .modern-header {
   border-bottom: 2px solid var(--accent);
-  padding-bottom: 12px;
+  padding-bottom: calc(12px * var(--inner-gap-scale));
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: calc(16px * var(--inner-gap-scale));
 }
 
 .modern-meta {
@@ -278,25 +352,30 @@ textarea {
 
 .compact-paper {
   min-height: 0;
-  padding: 20px;
+  padding: calc(16px * var(--inner-gap-scale));
 }
 
 .compact-header {
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 8px;
+  padding-bottom: calc(8px * var(--inner-gap-scale));
 }
 
 .template-compact .resume-section {
-  margin-top: 14px;
+  margin-top: calc(16px * var(--block-gap-scale));
 }
 
 .template-compact .resume-section h2 {
-  font-size: 16px;
-  margin-bottom: 6px;
+  font-size: calc(16px * var(--font-scale));
+  margin-bottom: calc(8px * var(--inner-gap-scale));
 }
 
 .template-compact .project-item p {
-  margin: 2px 0;
+  margin: calc(4px * var(--inner-gap-scale)) 0;
+}
+
+.template-compact .project-item {
+  margin-top: calc(8px * var(--block-gap-scale));
+  padding: calc(8px * var(--inner-gap-scale));
 }
 
 .theme-ocean {
@@ -314,6 +393,8 @@ textarea {
 @media (max-width: 1024px) {
   .workspace {
     grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
   }
 
   .left-pane {
@@ -322,14 +403,27 @@ textarea {
     padding-right: 0;
   }
 
+  .right-pane {
+    max-height: none;
+    overflow: visible;
+  }
+
   .paper {
     min-height: 0;
   }
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+
+  html,
   body {
     background: #fff;
+    margin: 0;
+    padding: 0;
   }
 
   .no-print {
@@ -348,7 +442,7 @@ textarea {
     border: none;
     border-radius: 0;
     box-shadow: none;
-    min-height: auto;
+    min-height: 0;
     margin: 0;
     padding: 0;
   }

@@ -3,6 +3,7 @@ export type SectionType = 'summary' | 'work' | 'education' | 'skills';
 export interface Project {
   id: string;
   name: string;
+  department?: string;
   period: string;
   description: string;
   responsibilities: string;

@@ -5,6 +5,9 @@ interface PersistedState {
   resume: ResumeData;
   template: TemplateType;
   theme: ThemeType;
+  fontScale: number;
+  blockGapScale: number;
+  innerGapScale: number;
 }
 
 const STORAGE_KEY = 'resume-builder-state-v1';
@@ -17,6 +20,11 @@ const isTemplateType = (value: unknown): value is TemplateType =>
 
 const isThemeType = (value: unknown): value is ThemeType =>
   typeof value === 'string' && THEME_SET.includes(value as ThemeType);
+
+const normalizeScale = (value: unknown): number => {
+  if (typeof value !== 'number' || Number.isNaN(value)) return 1;
+  return Math.max(0.8, Math.min(1.2, value));
+};
 
 export const loadPersistedState = (): PersistedState | null => {
   try {
@@ -35,6 +43,10 @@ export const loadPersistedState = (): PersistedState | null => {
       resume: record.resume,
       template: record.template,
       theme: record.theme,
+      // Backward compatibility: old saved state only has uiScale.
+      fontScale: normalizeScale(record.fontScale ?? record.uiScale),
+      blockGapScale: normalizeScale(record.blockGapScale ?? record.spaceScale ?? record.uiScale),
+      innerGapScale: normalizeScale(record.innerGapScale ?? record.spaceScale ?? record.uiScale),
     };
   } catch {
     return null;

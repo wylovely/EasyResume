@@ -45,19 +45,30 @@ const renderSections = (resume: ResumeData, options?: { compact?: boolean }) =>
           {section.data.items.map((work) => (
             <div key={work.id} className="timeline-item work-item">
               <div>
-                <strong>
-                  {work.company} · {work.title}
-                </strong>
+                <div className="work-head">
+                  <strong>
+                    {work.company} · {work.title}
+                  </strong>
+                  <span className="work-period">{work.period}</span>
+                </div>
                 {work.projects.map((project) => (
                   <div key={project.id} className="project-item">
                     <h4>{project.name}</h4>
-                    <p className="muted">{project.period}</p>
-                    {!options?.compact && <p>{project.description}</p>}
-                    <p>{project.responsibilities}</p>
+                    <p className="muted project-meta">{project.period}</p>
+                    {project.department && <p className="muted project-meta">部门：{project.department}</p>}
+                    {!options?.compact && (
+                      <div className="project-content project-description">
+                        <span className="project-content-label">项目描述</span>
+                        <p>{project.description}</p>
+                      </div>
+                    )}
+                    <div className="project-content project-responsibilities">
+                      <span className="project-content-label">工作职责</span>
+                      <p>{project.responsibilities}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-              <span>{work.period}</span>
             </div>
           ))}
         </div>

@@ -98,7 +98,7 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
                   ...work,
                   projects: [
                     ...work.projects,
-                    { id: createId(), name: '', period: '', description: '', responsibilities: '' },
+                    { id: createId(), name: '', department: '', period: '', description: '', responsibilities: '' },
                   ],
                 }
               : work
@@ -423,6 +423,30 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
                                         ...item,
                                         projects: item.projects.map((proj) =>
                                           proj.id === project.id ? { ...proj, period: v } : proj
+                                        ),
+                                      }
+                                    : item
+                                ),
+                              },
+                            };
+                          })
+                        }
+                      />
+                      <Field
+                        label="项目部门"
+                        value={project.department ?? ''}
+                        onChange={(v) =>
+                          updateSection(section.id, (current) => {
+                            if (current.type !== 'work') return current;
+                            return {
+                              ...current,
+                              data: {
+                                items: current.data.items.map((item) =>
+                                  item.id === work.id
+                                    ? {
+                                        ...item,
+                                        projects: item.projects.map((proj) =>
+                                          proj.id === project.id ? { ...proj, department: v } : proj
                                         ),
                                       }
                                     : item

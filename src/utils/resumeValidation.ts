@@ -37,9 +37,11 @@ const isWorkSection = (section: Record<string, unknown>): boolean =>
     const workValid = isString(work.id) && isString(work.company) && isString(work.title) && isString(work.period);
     const projectsValid = work.projects.every((project) => {
       if (!isObject(project)) return false;
+      const departmentValid = typeof project.department === 'undefined' || isString(project.department);
       return (
         isString(project.id) &&
         isString(project.name) &&
+        departmentValid &&
         isString(project.period) &&
         isString(project.description) &&
         isString(project.responsibilities)
