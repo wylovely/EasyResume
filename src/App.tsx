@@ -32,6 +32,35 @@ const getStringSetting = (source: Record<string, unknown>, key: string): string 
   return typeof value === 'string' && value.length > 0 ? value : null;
 };
 
+const PDF_SOFT_BREAK_CLASS = 'pdf-soft-break-before';
+
+const applyPdfSoftBreaks = (target: HTMLElement): void => {
+  const paperRect = target.getBoundingClientRect();
+  const pageHeightPx = (paperRect.width * 277) / 190;
+  const reservePx = 34; // around 1-2 text lines
+
+  const candidates = Array.from(
+    target.querySelectorAll<HTMLElement>('.resume-section, .work-item, .project-item')
+  );
+
+  candidates.forEach((item, index) => {
+    item.classList.remove(PDF_SOFT_BREAK_CLASS);
+    if (index === 0) return;
+
+    const top = item.getBoundingClientRect().top - paperRect.top;
+    const topInPage = top % pageHeightPx;
+    if (topInPage > pageHeightPx - reservePx) {
+      item.classList.add(PDF_SOFT_BREAK_CLASS);
+    }
+  });
+};
+
+const clearPdfSoftBreaks = (target: HTMLElement): void => {
+  target
+    .querySelectorAll<HTMLElement>(`.${PDF_SOFT_BREAK_CLASS}`)
+    .forEach((item) => item.classList.remove(PDF_SOFT_BREAK_CLASS));
+};
+
 const App = () => {
   const initialStateRef = useRef(createDefaultState());
   const initialState = initialStateRef.current;
@@ -230,6 +259,7 @@ const App = () => {
     target.style.setProperty('--text', '#1f2937');
     target.style.setProperty('--muted', '#6b7280');
     target.style.color = '#1f2937';
+    applyPdfSoftBreaks(target);
 
     try {
       const { default: html2pdf } = await import('html2pdf.js');
@@ -258,6 +288,7 @@ const App = () => {
       setPdfPreviewError('PDF 生成失败，请重试。');
     } finally {
       tempClasses.forEach((className) => target.classList.remove(className));
+      clearPdfSoftBreaks(target);
 
       if (prevFontScale) target.style.setProperty('--font-scale', prevFontScale);
       else target.style.removeProperty('--font-scale');

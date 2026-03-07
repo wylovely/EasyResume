@@ -3,11 +3,11 @@ import { createId } from '../utils/id';
 
 export const createDefaultResume = (): ResumeData => ({
   basics: {
-    name: '张三',
-    role: '前端工程师',
-    email: 'zhangsan@example.com',
-    phone: '138-0000-0000',
-    location: '上海',
+    name: '无名',
+    role: '正能量建设工程师',
+    email: 'wuming@easyresume.com',
+    phone: '139-1234-5678',
+    location: '杭州',
   },
   sections: [
     {
@@ -15,7 +15,8 @@ export const createDefaultResume = (): ResumeData => ({
       type: 'summary',
       title: '个人简介',
       data: {
-        content: '5年前端经验，擅长 React + TypeScript，关注组件抽象与工程效率。',
+        content:
+          '始终保持乐观向上的工作状态，擅长把复杂问题拆解为可执行目标，推动团队在积极氛围中持续交付高质量成果。',
       },
     },
     {
@@ -26,17 +27,18 @@ export const createDefaultResume = (): ResumeData => ({
         items: [
           {
             id: createId(),
-            company: '某科技公司',
-            title: '高级前端工程师',
-            period: '2022.01 - 至今',
+            company: '阳光自信公司',
+            title: '正能量建设工程师',
+            period: '2023.03 - 至今',
             projects: [
               {
                 id: createId(),
-                name: '简历系统重构',
-                department: '平台研发部',
-                period: '2025.03 - 2025.08',
-                description: '搭建可配置简历模板系统，支持多主题与打印导出。',
-                responsibilities: '负责数据建模、编辑器开发与打印样式优化。',
+                name: '向上成长计划平台',
+                department: '积极文化推进部',
+                period: '2024.01 - 2025.06',
+                description: '打造团队成长与激励平台，沉淀目标管理、复盘反馈和正向激励机制。',
+                responsibilities:
+                  '负责需求澄清与方案落地；推动跨团队协同；将关键流程产品化，持续提升执行效率与团队士气。',
               },
             ],
           },
@@ -51,9 +53,9 @@ export const createDefaultResume = (): ResumeData => ({
         items: [
           {
             id: createId(),
-            school: '某某大学',
-            major: '计算机科学与技术',
-            period: '2014.09 - 2018.06',
+            school: '向阳理工学院',
+            major: '积极系统工程',
+            period: '2015.09 - 2019.06',
           },
         ],
       },
@@ -63,7 +65,7 @@ export const createDefaultResume = (): ResumeData => ({
       type: 'skills',
       title: '技能列表',
       data: {
-        items: ['TypeScript', 'React', 'Vite', 'Node.js'],
+        items: ['目标拆解', '团队协作', '持续改进', '沟通推进', '正向反馈机制建设'],
       },
     },
   ],

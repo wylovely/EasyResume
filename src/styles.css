@@ -379,6 +379,11 @@ textarea {
   page-break-inside: auto;
 }
 
+.paper.pdf-exporting .pdf-soft-break-before {
+  break-before: page;
+  page-break-before: always;
+}
+
 .resume-header h1 {
   margin: 0;
   font-size: calc(34px * var(--font-scale));
@@ -417,7 +422,7 @@ textarea {
 
 .work-item {
   display: block;
-  border-bottom: 1px solid #e6edf7;
+  border-bottom: none;
   padding-bottom: calc(8px * var(--inner-gap-scale));
 }
 
