@@ -32,6 +32,23 @@ const getStringSetting = (source: Record<string, unknown>, key: string): string 
   return typeof value === 'string' && value.length > 0 ? value : null;
 };
 
+const sanitizeFilePart = (value: string): string =>
+  value
+    .trim()
+    .replace(/[\\/:*?"<>|]/g, '-')
+    .replace(/\s+/g, '')
+    .slice(0, 30);
+
+const buildResumeFileBaseName = (
+  basics: { name: string; phone: string; role: string },
+  fallbackDate: string
+): string => {
+  const parts = [sanitizeFilePart(basics.name), sanitizeFilePart(basics.phone), sanitizeFilePart(basics.role)].filter(
+    Boolean
+  );
+  return parts.length ? parts.join('-') : `resume-${fallbackDate}`;
+};
+
 const PDF_SOFT_BREAK_CLASS = 'pdf-soft-break-before';
 
 const applyPdfSoftBreaks = (target: HTMLElement): void => {
@@ -150,7 +167,8 @@ const App = () => {
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
     const stamp = new Date().toISOString().slice(0, 10);
-    const defaultFileName = `resume-${stamp}.json`;
+    const baseName = buildResumeFileBaseName(resume.basics, stamp);
+    const defaultFileName = `${baseName}.json`;
 
     if (!(typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window)) {
       const blob = new Blob([payload], { type: 'application/json' });
@@ -263,9 +281,10 @@ const App = () => {
 
     try {
       const { default: html2pdf } = await import('html2pdf.js');
+      const stamp = new Date().toISOString().slice(0, 10);
       const pdfOptions = {
         margin: [10, 10, 10, 10],
-        filename: 'resume-preview.pdf',
+        filename: `${buildResumeFileBaseName(resume.basics, stamp)}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -318,7 +337,8 @@ const App = () => {
       const url = URL.createObjectURL(pdfPreviewBlob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `resume-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const stamp = new Date().toISOString().slice(0, 10);
+      anchor.download = `${buildResumeFileBaseName(resume.basics, stamp)}.pdf`;
       anchor.click();
       URL.revokeObjectURL(url);
       return;
@@ -329,7 +349,8 @@ const App = () => {
       const { save } = await import('@tauri-apps/plugin-dialog');
       const { invoke } = await import('@tauri-apps/api/core');
       const { documentDir, join } = await import('@tauri-apps/api/path');
-      const defaultFileName = `resume-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const stamp = new Date().toISOString().slice(0, 10);
+      const defaultFileName = `${buildResumeFileBaseName(resume.basics, stamp)}.pdf`;
       const lastPath = getStringSetting(localConfig.pageSettings, 'lastPdfSavePath');
       const defaultPath = lastPath ?? (await join(await documentDir(), defaultFileName));
       const selectedPath = await save({
