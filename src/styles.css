@@ -459,6 +459,7 @@ textarea {
   color: #334155;
   font-size: calc(13px * var(--font-scale));
   line-height: calc(18px * var(--font-scale));
+  white-space: pre-line;
 }
 
 .project-responsibilities p {
@@ -466,6 +467,7 @@ textarea {
   font-size: calc(13px * var(--font-scale));
   line-height: calc(18px * var(--font-scale));
   font-weight: 500;
+  white-space: pre-line;
 }
 
 .muted {

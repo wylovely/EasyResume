@@ -1,4 +1,4 @@
-# Resume Template Builder
+# EasyResume
 
 基于 React + TypeScript + Vite 的简历模板编辑器。
 
