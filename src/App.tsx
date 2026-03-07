@@ -1,17 +1,40 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import EditorPanel from './components/business/EditorPanel';
 import PreviewPanel from './components/business/PreviewPanel';
 import ThemeTemplateBar from './components/business/ThemeTemplateBar';
 import { TEMPLATE_REGISTRY } from './components/business/PreviewPanel/templates/templateRegistry';
 import { createDefaultResume } from './data/defaultResume';
 import { ThemeType, TemplateType } from './types/resume';
+import { savePersistedState, loadPersistedState } from './utils/persistence';
 import { isResumeData } from './utils/resumeValidation';
 
+const initState = () => {
+  const persisted = loadPersistedState();
+  if (persisted) {
+    return persisted;
+  }
+
+  return {
+    resume: createDefaultResume(),
+    template: 'classic' as TemplateType,
+    theme: 'ocean' as ThemeType,
+  };
+};
+
 const App = () => {
-  const [resume, setResume] = useState(createDefaultResume);
-  const [template, setTemplate] = useState<TemplateType>('classic');
-  const [theme, setTheme] = useState<ThemeType>('ocean');
+  const initialStateRef = useRef<ReturnType<typeof initState> | null>(null);
+  if (!initialStateRef.current) {
+    initialStateRef.current = initState();
+  }
+  const initialState = initialStateRef.current;
+  const [resume, setResume] = useState(initialState.resume);
+  const [template, setTemplate] = useState<TemplateType>(initialState.template);
+  const [theme, setTheme] = useState<ThemeType>(initialState.theme);
   const importInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    savePersistedState({ resume, template, theme });
+  }, [resume, template, theme]);
 
   const exportJson = () => {
     const payload = JSON.stringify(resume, null, 2);
