@@ -153,6 +153,25 @@ const App = () => {
     setPdfPreviewLoading(true);
     setPdfPreviewError(null);
 
+    const tempClasses = [`template-${template}`, `theme-${theme}`];
+    tempClasses.forEach((className) => target.classList.add(className));
+
+    const prevFontScale = target.style.getPropertyValue('--font-scale');
+    const prevBlockGapScale = target.style.getPropertyValue('--block-gap-scale');
+    const prevInnerGapScale = target.style.getPropertyValue('--inner-gap-scale');
+    const prevAccent = target.style.getPropertyValue('--accent');
+    const prevText = target.style.getPropertyValue('--text');
+    const prevMuted = target.style.getPropertyValue('--muted');
+    const prevColor = target.style.color;
+
+    target.style.setProperty('--font-scale', String(fontScale));
+    target.style.setProperty('--block-gap-scale', String(blockGapScale));
+    target.style.setProperty('--inner-gap-scale', String(innerGapScale));
+    target.style.setProperty('--accent', getComputedStyle(target).getPropertyValue('--accent').trim() || '#0284c7');
+    target.style.setProperty('--text', '#1f2937');
+    target.style.setProperty('--muted', '#6b7280');
+    target.style.color = '#1f2937';
+
     try {
       const { default: html2pdf } = await import('html2pdf.js');
       const worker = html2pdf()
@@ -176,6 +195,22 @@ const App = () => {
     } catch {
       setPdfPreviewError('PDF 生成失败，请重试。');
     } finally {
+      tempClasses.forEach((className) => target.classList.remove(className));
+
+      if (prevFontScale) target.style.setProperty('--font-scale', prevFontScale);
+      else target.style.removeProperty('--font-scale');
+      if (prevBlockGapScale) target.style.setProperty('--block-gap-scale', prevBlockGapScale);
+      else target.style.removeProperty('--block-gap-scale');
+      if (prevInnerGapScale) target.style.setProperty('--inner-gap-scale', prevInnerGapScale);
+      else target.style.removeProperty('--inner-gap-scale');
+      if (prevAccent) target.style.setProperty('--accent', prevAccent);
+      else target.style.removeProperty('--accent');
+      if (prevText) target.style.setProperty('--text', prevText);
+      else target.style.removeProperty('--text');
+      if (prevMuted) target.style.setProperty('--muted', prevMuted);
+      else target.style.removeProperty('--muted');
+      target.style.color = prevColor;
+
       setPdfPreviewLoading(false);
     }
   };
