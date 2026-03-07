@@ -1,0 +1,319 @@
+:root {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --line: #dbe3ef;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --accent: #0f766e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", "PingFang SC", sans-serif;
+  background: radial-gradient(circle at top left, #e9eef8, #f9fbff 45%, #eef3ff 100%);
+  color: var(--text);
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.toolbar label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+
+select,
+button,
+input,
+textarea {
+  border: 1px solid #cdd7e5;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+}
+
+button {
+  cursor: pointer;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(360px, 48%) 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+.left-pane {
+  max-height: calc(100vh - 82px);
+  overflow: auto;
+  padding-right: 8px;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.panel-body {
+  padding: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.field span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group,
+.sub-group {
+  border: 1px dashed #c9d7ef;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.sub-group {
+  background: #f8fbff;
+}
+
+.line,
+.row-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.danger {
+  color: #b91c1c;
+}
+
+.tip {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.json-view {
+  margin: 0;
+  max-height: 240px;
+  overflow: auto;
+  font-size: 12px;
+  background: #0f172a;
+  color: #d6e3ff;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.right-pane {
+  overflow: auto;
+}
+
+.preview-shell {
+  padding: 12px;
+}
+
+.paper {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  background: #fff;
+  min-height: 1123px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 28px;
+  box-shadow: 0 12px 42px rgba(15, 23, 42, 0.12);
+}
+
+.resume-header h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.resume-header p {
+  margin: 8px 0;
+  font-size: 18px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resume-section {
+  margin-top: 22px;
+}
+
+.resume-section h2 {
+  margin: 0 0 10px;
+  border-left: 4px solid var(--accent);
+  padding-left: 8px;
+  font-size: 18px;
+}
+
+.timeline-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.work-item {
+  border-bottom: 1px solid #e6edf7;
+  padding-bottom: 10px;
+}
+
+.project-item h4 {
+  margin: 6px 0;
+}
+
+.project-item p {
+  margin: 4px 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-list li {
+  background: #e6f6f4;
+  color: #0e7490;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.template-modern .paper {
+  border-radius: 0;
+  border: none;
+}
+
+.template-modern .resume-header {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 12px;
+}
+
+.theme-ocean {
+  --accent: #0284c7;
+}
+
+.theme-forest {
+  --accent: #15803d;
+}
+
+.theme-sunset {
+  --accent: #c2410c;
+}
+
+@media (max-width: 1024px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .left-pane {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .paper {
+    min-height: 0;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .workspace,
+  .right-pane,
+  .preview-shell {
+    padding: 0;
+    display: block;
+  }
+
+  .paper {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: auto;
+    margin: 0;
+    padding: 0;
+  }
+}
