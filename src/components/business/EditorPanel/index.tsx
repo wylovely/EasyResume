@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Panel from '../../common/Panel';
 import Field from '../../common/Field';
 import {
@@ -40,6 +41,8 @@ const newSectionFactory = (type: SectionType): ResumeSection => {
 };
 
 const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+
   const updateBasics = (key: keyof ResumeData['basics'], v: string) => {
     onChange({ ...value, basics: { ...value.basics, [key]: v } });
   };
@@ -57,6 +60,45 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
 
   const removeSection = (sectionId: string) => {
     onChange({ ...value, sections: value.sections.filter((section) => section.id !== sectionId) });
+    setCollapsedSections((current) => {
+      const next = { ...current };
+      delete next[sectionId];
+      return next;
+    });
+  };
+
+  const toggleSectionCollapsed = (sectionId: string) => {
+    setCollapsedSections((current) => ({ ...current, [sectionId]: !current[sectionId] }));
+  };
+
+  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
+    const currentIndex = value.sections.findIndex((section) => section.id === sectionId);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= value.sections.length) return;
+
+    const sections = [...value.sections];
+    const [moved] = sections.splice(currentIndex, 1);
+    sections.splice(targetIndex, 0, moved);
+    onChange({ ...value, sections });
+  };
+
+  const getSectionPrimaryInfo = (section: ResumeSection): string => {
+    if (section.type === 'summary') {
+      return section.data.content.slice(0, 24) || '暂无简介';
+    }
+    if (section.type === 'work') {
+      const first = section.data.items[0];
+      if (!first) return '暂无工作项';
+      return first.company || first.title || '未填写公司/职位';
+    }
+    if (section.type === 'education') {
+      const first = section.data.items[0];
+      return first?.school || '暂无学校信息';
+    }
+    const firstSkill = section.data.items.find((item) => item.trim().length > 0);
+    return firstSkill || '暂无技能';
   };
 
   const addWork = (sectionId: string) => {
@@ -140,17 +182,41 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
         <p className="tip">每个模块都可以添加、删除，所有数据会同步到右侧 JSON。</p>
       </Panel>
 
-      {value.sections.map((section) => (
-        <Panel
-          key={section.id}
-          title={section.title}
-          extra={
-            <button type="button" className="danger" onClick={() => removeSection(section.id)}>
-              删除模块
-            </button>
-          }
-        >
-          <Field
+      {value.sections.map((section, index) => {
+        const collapsed = collapsedSections[section.id] ?? false;
+
+        return (
+          <Panel
+            key={section.id}
+            title={section.title}
+            extra={
+              <div className="section-extra">
+                <button type="button" onClick={() => moveSection(section.id, 'up')} disabled={index === 0}>
+                  上移
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveSection(section.id, 'down')}
+                  disabled={index === value.sections.length - 1}
+                >
+                  下移
+                </button>
+                <button type="button" onClick={() => toggleSectionCollapsed(section.id)}>
+                  {collapsed ? '展开' : '收起'}
+                </button>
+                <button type="button" className="danger" onClick={() => removeSection(section.id)}>
+                  删除模块
+                </button>
+              </div>
+            }
+          >
+            {collapsed ? (
+              <p className="section-collapsed-info">
+                {section.title}（{getSectionPrimaryInfo(section)}）
+              </p>
+            ) : (
+              <>
+                <Field
             label="模块标题"
             value={section.title}
             onChange={(v) => updateSection(section.id, (current) => ({ ...current, title: v }))}
@@ -518,8 +584,11 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
               </button>
             </div>
           )}
-        </Panel>
-      ))}
+              </>
+            )}
+          </Panel>
+        );
+      })}
 
       <Panel title="简历 JSON 数据（只读）">
         <pre className="json-view">{JSON.stringify(value, null, 2)}</pre>
