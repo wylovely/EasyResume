@@ -457,6 +457,18 @@ textarea {
   margin-bottom: calc(8px * var(--block-gap-scale));
 }
 
+.education-main {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: calc(8px * var(--inner-gap-scale));
+}
+
+.education-major {
+  color: var(--muted);
+  font-size: calc(14px * var(--font-scale));
+}
+
 .work-item {
   display: block;
   border-bottom: none;

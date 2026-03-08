@@ -150,6 +150,30 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
     });
   };
 
+  const moveProject = (sectionId: string, workId: string, projectId: string, direction: 'up' | 'down') => {
+    updateSection(sectionId, (section) => {
+      if (section.type !== 'work') return section;
+      return {
+        ...section,
+        data: {
+          items: section.data.items.map((work) => {
+            if (work.id !== workId) return work;
+            const currentIndex = work.projects.findIndex((project) => project.id === projectId);
+            if (currentIndex === -1) return work;
+
+            const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+            if (targetIndex < 0 || targetIndex >= work.projects.length) return work;
+
+            const projects = [...work.projects];
+            const [moved] = projects.splice(currentIndex, 1);
+            projects.splice(targetIndex, 0, moved);
+            return { ...work, projects };
+          }),
+        },
+      };
+    });
+  };
+
   return (
     <div className="editor">
       <Panel title="基础信息">
@@ -421,34 +445,50 @@ const EditorPanel = ({ value, onChange }: EditorPanelProps) => {
                     }
                   />
 
-                  {work.projects.map((project) => (
+                  {work.projects.map((project, projectIndex) => (
                     <div key={project.id} className="sub-group">
                       <div className="row-actions">
                         <span>项目</span>
-                        <button
-                          type="button"
-                          className="danger"
-                          onClick={() =>
-                            updateSection(section.id, (current) => {
-                              if (current.type !== 'work') return current;
-                              return {
-                                ...current,
-                                data: {
-                                  items: current.data.items.map((item) =>
-                                    item.id === work.id
-                                      ? {
-                                          ...item,
-                                          projects: item.projects.filter((proj) => proj.id !== project.id),
-                                        }
-                                      : item
-                                  ),
-                                },
-                              };
-                            })
-                          }
-                        >
-                          删除项目
-                        </button>
+                        <div className="section-extra">
+                          <button
+                            type="button"
+                            onClick={() => moveProject(section.id, work.id, project.id, 'up')}
+                            disabled={projectIndex === 0}
+                          >
+                            上移
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveProject(section.id, work.id, project.id, 'down')}
+                            disabled={projectIndex === work.projects.length - 1}
+                          >
+                            下移
+                          </button>
+                          <button
+                            type="button"
+                            className="danger"
+                            onClick={() =>
+                              updateSection(section.id, (current) => {
+                                if (current.type !== 'work') return current;
+                                return {
+                                  ...current,
+                                  data: {
+                                    items: current.data.items.map((item) =>
+                                      item.id === work.id
+                                        ? {
+                                            ...item,
+                                            projects: item.projects.filter((proj) => proj.id !== project.id),
+                                          }
+                                        : item
+                                    ),
+                                  },
+                                };
+                              })
+                            }
+                          >
+                            删除项目
+                          </button>
+                        </div>
                       </div>
                       <Field
                         label="项目名称"

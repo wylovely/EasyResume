@@ -30,9 +30,9 @@ const renderSections = (resume: ResumeData, options?: { compact?: boolean }) =>
         <div className="timeline">
           {section.data.items.map((edu) => (
             <div key={edu.id} className="timeline-item">
-              <div>
+              <div className="education-main">
                 <strong>{edu.school}</strong>
-                <p>{edu.major}</p>
+                <span className="education-major">{edu.major}</span>
               </div>
               <span>{edu.period}</span>
             </div>
@@ -54,18 +54,20 @@ const renderSections = (resume: ResumeData, options?: { compact?: boolean }) =>
                 {work.projects.map((project) => (
                   <div key={project.id} className="project-item">
                     <h4>{project.name}</h4>
-                    <p className="muted project-meta">{project.period}</p>
-                    {project.department && <p className="muted project-meta">部门：{project.department}</p>}
-                    {!options?.compact && (
+                    {project.period.trim() && <p className="muted project-meta">{project.period}</p>}
+                    {project.department?.trim() && <p className="muted project-meta">部门：{project.department}</p>}
+                    {project.description.trim() && (
                       <div className="project-content project-description">
                         <span className="project-content-label">项目描述</span>
                         <p>{project.description}</p>
                       </div>
                     )}
-                    <div className="project-content project-responsibilities">
-                      <span className="project-content-label">工作职责</span>
-                      <p>{project.responsibilities}</p>
-                    </div>
+                    {project.responsibilities.trim() && (
+                      <div className="project-content project-responsibilities">
+                        <span className="project-content-label">工作职责</span>
+                        <p>{project.responsibilities}</p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
